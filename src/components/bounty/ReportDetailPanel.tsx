@@ -17,11 +17,13 @@ export default function ReportDetailPanel({
   programs,
   findings,
   onChange,
+  onClose,
 }: {
   report: Report;
   programs: Program[];
   findings: Finding[];
   onChange: (updated: Report) => void;
+  onClose: () => void;
 }) {
   const [draft, setDraft] = useState(report);
   const [saved, setSaved] = useState(false);
@@ -54,6 +56,9 @@ export default function ReportDetailPanel({
 
   return (
     <div className={styles.reportPanel}>
+      <button type="button" onClick={onClose} className={styles.panelCloseButton} aria-label="Fechar painel">
+        <X size={15} />
+      </button>
       <div className={styles.editorTopBar}>
         <span className={styles.breadcrumbCurrent}>{draft.title || 'novo report'}</span>
         <div className={styles.topBarRight}>

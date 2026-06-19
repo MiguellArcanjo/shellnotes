@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { Upload } from 'lucide-react';
 import ChipInput from '@/components/site/ChipInput';
 import {
   PLATFORMS,
@@ -12,6 +13,7 @@ import {
   type Severity,
 } from '@/lib/bounty-data';
 import { saveOverride } from '@/lib/programOverrides';
+import { parseScopeCsv } from '@/lib/scopeImport';
 import styles from './Bounty.module.css';
 
 const AUTOSAVE_DELAY = 1200;
@@ -25,6 +27,8 @@ export default function ProgramEditor({
 }) {
   const [draft, setDraft] = useState(program);
   const [saved, setSaved] = useState(false);
+  const [scopeImportSummary, setScopeImportSummary] = useState('');
+  const scopeFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -50,6 +54,25 @@ export default function ProgramEditor({
   const save = () => {
     saveOverride(draft.id, draft);
     setSaved(true);
+  };
+
+  const handleScopeCsvImport = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    const text = await file.text();
+    const { scopeIn, scopeOut } = parseScopeCsv(text);
+    if (scopeIn.length === 0 && scopeOut.length === 0) {
+      setScopeImportSummary('nenhum escopo reconhecido nesse CSV.');
+      return;
+    }
+
+    update({
+      scopeIn: Array.from(new Set([...draft.scopeIn, ...scopeIn])),
+      scopeOut: Array.from(new Set([...draft.scopeOut, ...scopeOut])),
+    });
+    setScopeImportSummary(`${scopeIn.length} em escopo + ${scopeOut.length} fora de escopo importados.`);
   };
 
   return (
@@ -145,6 +168,21 @@ export default function ProgramEditor({
             className={styles.formInput}
           />
         </label>
+      </div>
+
+      <div className={styles.scopeImportRow}>
+        <input
+          ref={scopeFileInputRef}
+          type="file"
+          accept=".csv,text/csv"
+          hidden
+          onChange={handleScopeCsvImport}
+        />
+        <button type="button" onClick={() => scopeFileInputRef.current?.click()} className={styles.secondaryButtonSmall}>
+          <Upload size={14} />
+          importar CSV de escopo (HackerOne)
+        </button>
+        {scopeImportSummary && <span className={styles.scopeImportSummary}>{scopeImportSummary}</span>}
       </div>
 
       <div className={styles.scopeSection}>

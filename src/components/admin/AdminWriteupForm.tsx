@@ -54,8 +54,9 @@ export default function AdminWriteupForm({
         writeup={writeup}
         backHref="/admin/writeups"
         onExit={(updated) => {
-          saveOverride(updated.slug, updated);
-          router.push('/admin/writeups');
+          void saveOverride(updated.slug, updated).then(() => {
+            router.push('/admin/writeups');
+          });
         }}
       />
     </div>

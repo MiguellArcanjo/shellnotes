@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, Edit2, Plus, Search, Trash2 } from 'lucide-react';
+import ConfirmModal from '@/components/site/ConfirmModal';
 import {
   CVE_TYPES,
   type CveEntry,
@@ -38,6 +39,7 @@ export default function AdminCvesManager({
   const [statusFilter, setStatusFilter] = useState(ALL);
   const [sortKey, setSortKey] = useState<SortKey>('updatedAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [pendingDelete, setPendingDelete] = useState<CveEntry | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -107,13 +109,20 @@ export default function AdminCvesManager({
       : <div className={styles.loading}>CVE não encontrada.</div>;
   }
 
-  const handleDelete = (item: CveEntry) => {
-    if (!window.confirm(`Excluir ${item.cveId || 'esta CVE'}?`)) return;
-    setItems(deleteCve(item.id));
-  };
-
   return (
     <div className={styles.page}>
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Excluir CVE"
+        message={`Excluir ${pendingDelete?.cveId || 'esta CVE'}? Essa ação não pode ser desfeita.`}
+        onConfirm={() => {
+          if (!pendingDelete) return;
+          const item = pendingDelete;
+          setPendingDelete(null);
+          void deleteCve(item.id).then(setItems);
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
       <div className={styles.toolbar}>
         <div>
           <div className={styles.eyebrow}>conteúdo</div>
@@ -206,7 +215,7 @@ export default function AdminCvesManager({
                     <a href={`/admin/cves?edit=${encodeURIComponent(item.id)}`} className={styles.iconButton} aria-label={`Editar ${item.cveId}`}>
                       <Edit2 size={15} />
                     </a>
-                    <button type="button" onClick={() => handleDelete(item)} className={styles.dangerButton} aria-label={`Excluir ${item.cveId}`}>
+                    <button type="button" onClick={() => setPendingDelete(item)} className={styles.dangerButton} aria-label={`Excluir ${item.cveId}`}>
                       <Trash2 size={15} />
                     </button>
                   </div>

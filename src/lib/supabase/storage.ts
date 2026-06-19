@@ -32,3 +32,11 @@ export async function uploadPrivateFile(file: File, folder = 'uploads') {
   if (error) throw error;
   return path;
 }
+
+export async function getPrivateFileUrl(path: string) {
+  const supabase = createClient();
+  const bucket = process.env.NEXT_PUBLIC_SUPABASE_BOUNTY_BUCKET!;
+  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
+  if (error) throw error;
+  return data.signedUrl;
+}

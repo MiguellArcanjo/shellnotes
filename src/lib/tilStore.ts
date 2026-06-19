@@ -42,18 +42,18 @@ export function createBlankNote(): TilNote {
   return { date, dateLabel: formatDateLabel(date), title: '', body: '', code: '', tags: [] };
 }
 
-export function saveNote(key: string, data: TilNote) {
+export async function saveNote(key: string, data: TilNote) {
   const all = readAll();
   all[key] = data;
   writeAll(all);
-  void upsertContentEntry('til', key, 'published', data).catch(() => {});
+  await upsertContentEntry('til', key, 'published', data).catch(() => {});
 }
 
-export function deleteNote(key: string, fallback: TilNote) {
+export async function deleteNote(key: string, fallback: TilNote) {
   const all = readAll();
   all[key] = { ...fallback, deleted: true };
   writeAll(all);
-  void deleteContentEntry('til', key).catch(() => {});
+  await deleteContentEntry('til', key).catch(() => {});
 }
 
 export function getEffectiveTil(seed: TilNote[]): TilEntryWithKey[] {

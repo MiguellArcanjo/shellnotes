@@ -46,8 +46,9 @@ export default function CveEditor({ entry }: { entry: CveEntry }) {
       status: status ?? draft.status,
       updatedAt: new Date().toISOString().slice(0, 10),
     };
-    saveCve(next);
-    router.push('/admin/cves');
+    void saveCve(next).then(() => {
+      router.push('/admin/cves');
+    });
   };
 
   return (

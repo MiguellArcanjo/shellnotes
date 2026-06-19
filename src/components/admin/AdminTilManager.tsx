@@ -5,6 +5,7 @@ import { Edit2, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ChipInput from '@/components/site/ChipInput';
+import ConfirmModal from '@/components/site/ConfirmModal';
 import { type TilNote } from '@/lib/til-data';
 import {
   createBlankNote,
@@ -26,6 +27,7 @@ export default function AdminTilManager({
   const router = useRouter();
   const [items, setItems] = useState<TilEntryWithKey[]>([]);
   const [draft, setDraft] = useState<TilNote>(createBlankNote());
+  const [pendingDelete, setPendingDelete] = useState<TilEntryWithKey | null>(null);
   const reload = async () => {
     const remote = await getRemoteTil();
     setItems(remote.sort((a, b) => b.date.localeCompare(a.date)));
@@ -54,8 +56,9 @@ export default function AdminTilManager({
     const save = () => {
       const title = draft.title.trim();
       if (!title) return;
-      saveNote(mode === 'edit' && entryKey ? entryKey : newKey(), { ...draft, title });
-      router.push('/admin/til');
+      void saveNote(mode === 'edit' && entryKey ? entryKey : newKey(), { ...draft, title }).then(() => {
+        router.push('/admin/til');
+      });
     };
     return (
       <div className={styles.editorWrapNarrow}>
@@ -82,6 +85,18 @@ export default function AdminTilManager({
 
   return (
     <div className={styles.page}>
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Excluir nota"
+        message={`Remover "${pendingDelete?.title ?? ''}"? Essa ação não pode ser desfeita.`}
+        onConfirm={() => {
+          if (!pendingDelete) return;
+          const item = pendingDelete;
+          setPendingDelete(null);
+          void deleteNote(item._key, item).then(() => reload());
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
       <div className={styles.toolbar}>
         <div>
           <div className={styles.eyebrow}>conteúdo</div>
@@ -99,12 +114,7 @@ export default function AdminTilManager({
             </div>
             <div className={styles.rowActions}>
               <Link href={`/admin/til?edit=${encodeURIComponent(item._key)}`} className={styles.iconButton} aria-label={`Editar ${item.title}`}><Edit2 size={15} /></Link>
-              <button type="button" onClick={() => {
-                if (window.confirm('Remover esta nota?')) {
-                  deleteNote(item._key, item);
-                  void reload();
-                }
-              }} className={styles.dangerButton} aria-label={`Excluir ${item.title}`}><Trash2 size={15} /></button>
+              <button type="button" onClick={() => setPendingDelete(item)} className={styles.dangerButton} aria-label={`Excluir ${item.title}`}><Trash2 size={15} /></button>
             </div>
           </div>
         ))}

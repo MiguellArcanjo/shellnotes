@@ -1,0 +1,78 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--text) 45%, transparent);
+  animation: overlayIn 0.12s ease-out;
+}
+
+.modal {
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid var(--lines);
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--text) 18%, transparent);
+  padding: 20px;
+  animation: modalIn 0.14s ease-out;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.message {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--secondary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cancelButton,
+.confirmButton {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--lines);
+  background: transparent;
+  color: var(--text);
+}
+
+.cancelButton:hover {
+  background: var(--code-bg);
+}
+
+.confirmButton {
+  border-color: var(--severity-critical);
+  background: var(--severity-critical);
+  color: #fff;
+}
+
+.confirmButton:hover {
+  background: color-mix(in srgb, var(--severity-critical) 85%, black);
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Edit2, Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import ConfirmModal from '@/components/site/ConfirmModal';
 import type { Writeup } from '@/lib/writeups-data';
 import { deleteOverride, getRemoteWriteups } from '@/lib/writeupOverrides';
 import AdminWriteupForm from './AdminWriteupForm';
@@ -17,6 +18,7 @@ export default function AdminWriteupsManager({
 }) {
   const [items, setItems] = useState<Writeup[]>([]);
   const [search, setSearch] = useState('');
+  const [pendingDelete, setPendingDelete] = useState<Writeup | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -28,7 +30,7 @@ export default function AdminWriteupsManager({
     return () => {
       active = false;
     };
-  }, []);
+  }, [mode]);
 
   const visibleItems = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -44,14 +46,24 @@ export default function AdminWriteupsManager({
   if (mode === 'new') return <AdminWriteupForm seed={null} slug="new" />;
   if (mode === 'edit' && slug) return <AdminWriteupForm seed={null} slug={slug} />;
 
-  const handleDelete = (item: Writeup) => {
-    if (!window.confirm('Excluir este writeup permanentemente?')) return;
-    deleteOverride(item.slug);
-    setItems((current) => current.filter((writeup) => writeup.slug !== item.slug));
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    const item = pendingDelete;
+    setPendingDelete(null);
+    void deleteOverride(item.slug).then(() => {
+      setItems((current) => current.filter((writeup) => writeup.slug !== item.slug));
+    });
   };
 
   return (
     <div className={styles.page}>
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Excluir writeup"
+        message={`Excluir "${pendingDelete?.title ?? ''}" permanentemente? Essa ação não pode ser desfeita.`}
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
       <div className={styles.toolbar}>
         <div>
           <div className={styles.eyebrow}>conteúdo</div>
@@ -110,7 +122,7 @@ export default function AdminWriteupsManager({
                     </Link>
                     <button
                       type="button"
-                      onClick={() => handleDelete(item)}
+                      onClick={() => setPendingDelete(item)}
                       className={styles.dangerButton}
                       aria-label={`Excluir ${item.title}`}
                     >

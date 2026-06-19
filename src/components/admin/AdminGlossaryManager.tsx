@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Edit2, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import ConfirmModal from '@/components/site/ConfirmModal';
 import { type GlossaryTerm } from '@/lib/glossary-data';
 import {
   deleteTerm,
@@ -26,6 +27,7 @@ export default function AdminGlossaryManager({
   const router = useRouter();
   const [items, setItems] = useState<GlossaryEntryWithKey[]>([]);
   const [draft, setDraft] = useState<GlossaryTerm>(BLANK);
+  const [pendingDelete, setPendingDelete] = useState<GlossaryEntryWithKey | null>(null);
   const reload = async () => {
     const remote = await getRemoteGlossary();
     setItems(remote.sort((a, b) => a.term.localeCompare(b.term)));
@@ -54,8 +56,9 @@ export default function AdminGlossaryManager({
     const save = () => {
       const term = draft.term.trim();
       if (!term) return;
-      saveTerm(mode === 'edit' && entryKey ? entryKey : newKey(), { ...draft, term });
-      router.push('/admin/glossary');
+      void saveTerm(mode === 'edit' && entryKey ? entryKey : newKey(), { ...draft, term }).then(() => {
+        router.push('/admin/glossary');
+      });
     };
     return (
       <div className={styles.editorWrapNarrow}>
@@ -81,6 +84,18 @@ export default function AdminGlossaryManager({
 
   return (
     <div className={styles.page}>
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Excluir termo"
+        message={`Remover "${pendingDelete?.term ?? ''}"? Essa ação não pode ser desfeita.`}
+        onConfirm={() => {
+          if (!pendingDelete) return;
+          const item = pendingDelete;
+          setPendingDelete(null);
+          void deleteTerm(item._key, item).then(() => reload());
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
       <div className={styles.toolbar}>
         <div>
           <div className={styles.eyebrow}>conteúdo</div>
@@ -98,12 +113,7 @@ export default function AdminGlossaryManager({
             </div>
             <div className={styles.rowActions}>
               <Link href={`/admin/glossary?edit=${encodeURIComponent(item._key)}`} className={styles.iconButton} aria-label={`Editar ${item.term}`}><Edit2 size={15} /></Link>
-              <button type="button" onClick={() => {
-                if (window.confirm('Remover este termo?')) {
-                  deleteTerm(item._key, item);
-                  void reload();
-                }
-              }} className={styles.dangerButton} aria-label={`Excluir ${item.term}`}><Trash2 size={15} /></button>
+              <button type="button" onClick={() => setPendingDelete(item)} className={styles.dangerButton} aria-label={`Excluir ${item.term}`}><Trash2 size={15} /></button>
             </div>
           </div>
         ))}

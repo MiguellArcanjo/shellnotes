@@ -35,21 +35,21 @@ export function getAllOverrides(): Record<string, WriteupOverride> {
   return readAll();
 }
 
-export function saveOverride(slug: string, data: WriteupOverride) {
+export async function saveOverride(slug: string, data: WriteupOverride) {
   const all = readAll();
   all[slug] = { ...all[slug], ...data };
   writeAll(all);
   const status = data.status ?? 'draft';
-  void upsertContentEntry('writeup', slug, status, { ...data, slug }).catch(() => {
+  await upsertContentEntry('writeup', slug, status, { ...data, slug }).catch(() => {
     // The local draft remains available if Supabase has not been initialized yet.
   });
 }
 
-export function deleteOverride(slug: string) {
+export async function deleteOverride(slug: string) {
   const all = readAll();
   delete all[slug];
   writeAll(all);
-  void deleteContentEntry('writeup', slug).catch(() => {});
+  await deleteContentEntry('writeup', slug).catch(() => {});
 }
 
 export async function getRemoteOverrides(): Promise<Record<string, WriteupOverride>> {

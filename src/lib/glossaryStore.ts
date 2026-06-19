@@ -32,18 +32,18 @@ export function newKey(): string {
   return `new-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
 }
 
-export function saveTerm(key: string, data: GlossaryTerm) {
+export async function saveTerm(key: string, data: GlossaryTerm) {
   const all = readAll();
   all[key] = data;
   writeAll(all);
-  void upsertContentEntry('glossary', key, 'published', data).catch(() => {});
+  await upsertContentEntry('glossary', key, 'published', data).catch(() => {});
 }
 
-export function deleteTerm(key: string, fallback: GlossaryTerm) {
+export async function deleteTerm(key: string, fallback: GlossaryTerm) {
   const all = readAll();
   all[key] = { ...fallback, deleted: true };
   writeAll(all);
-  void deleteContentEntry('glossary', key).catch(() => {});
+  await deleteContentEntry('glossary', key).catch(() => {});
 }
 
 export function getEffectiveGlossary(seed: GlossaryTerm[]): GlossaryEntryWithKey[] {

@@ -44,23 +44,23 @@ export function getCve(id: string): CveEntry | undefined {
   return readAll().find((entry) => entry.id === id);
 }
 
-export function saveCve(entry: CveEntry): CveEntry[] {
+export async function saveCve(entry: CveEntry): Promise<CveEntry[]> {
   const current = readAll();
   const exists = current.some((item) => item.id === entry.id);
   const next = exists
     ? current.map((item) => (item.id === entry.id ? entry : item))
     : [entry, ...current];
   writeAll(next);
-  void upsertContentEntry('cve', entry.id, entry.status, entry).catch(() => {
+  await upsertContentEntry('cve', entry.id, entry.status, entry).catch(() => {
     // Preserve the browser copy while the remote schema is being initialized.
   });
   return next;
 }
 
-export function deleteCve(id: string): CveEntry[] {
+export async function deleteCve(id: string): Promise<CveEntry[]> {
   const next = readAll().filter((entry) => entry.id !== id);
   writeAll(next);
-  void deleteContentEntry('cve', id).catch(() => {});
+  await deleteContentEntry('cve', id).catch(() => {});
   return next;
 }
 

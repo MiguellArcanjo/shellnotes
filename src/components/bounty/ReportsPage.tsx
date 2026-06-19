@@ -125,6 +125,7 @@ export default function ReportsPage() {
               programs={programs}
               findings={findings}
               onChange={handleUpdate}
+              onClose={() => setSelectedId(null)}
             />
           ) : (
             <div className={styles.reportDetailEmpty}>

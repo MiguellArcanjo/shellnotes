@@ -46,6 +46,21 @@ html[data-theme='dark'] {
   --code-bg: #1E1D1B;
 }
 
+/*
+ * Without this, an explicit light choice had no effect whenever the OS
+ * preference was dark: the prefers-color-scheme media query above always
+ * wins over the bare :root defaults, and there was nothing forcing light
+ * back. This attribute selector outranks that media query.
+ */
+html[data-theme='light'] {
+  --bg: #FBFBF9;
+  --text: #1A1A17;
+  --secondary: #76746C;
+  --lines: #E7E6E0;
+  --accent: #3E7A5E;
+  --code-bg: #F4F3EF;
+}
+
 body {
   background: var(--bg);
   color: var(--text);

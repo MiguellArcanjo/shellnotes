@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Edit2, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import ConfirmModal from '@/components/site/ConfirmModal';
 import CheatsheetEditor from '@/components/cheatsheets/CheatsheetEditor';
 import {
   countCommands,
@@ -35,6 +36,7 @@ export default function AdminCheatsheetsManager({
   const router = useRouter();
   const [items, setItems] = useState<Cheatsheet[]>([]);
   const [draft, setDraft] = useState<Cheatsheet | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Cheatsheet | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -62,8 +64,9 @@ export default function AdminCheatsheetsManager({
         <CheatsheetEditor
           sheet={draft}
           onExit={(updated) => {
-            saveOverride(updated.slug, updated);
-            router.push('/admin/cheatsheets');
+            void saveOverride(updated.slug, updated).then(() => {
+              router.push('/admin/cheatsheets');
+            });
           }}
         />
       </div>
@@ -72,6 +75,20 @@ export default function AdminCheatsheetsManager({
 
   return (
     <div className={styles.page}>
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Excluir cheatsheet"
+        message={`Remover as alterações locais de "${pendingDelete?.title ?? ''}"? Essa ação não pode ser desfeita.`}
+        onConfirm={() => {
+          if (!pendingDelete) return;
+          const sheet = pendingDelete;
+          setPendingDelete(null);
+          void deleteOverride(sheet.slug).then(() => {
+            setItems((current) => current.filter((item) => item.slug !== sheet.slug));
+          });
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
       <div className={styles.toolbar}>
         <div>
           <div className={styles.eyebrow}>conteúdo</div>
@@ -93,11 +110,7 @@ export default function AdminCheatsheetsManager({
               <Link href={`/admin/cheatsheets?edit=${encodeURIComponent(sheet.slug)}`} className={styles.iconButton} aria-label={`Editar ${sheet.title}`}>
                 <Edit2 size={15} />
               </Link>
-              <button type="button" onClick={() => {
-                if (!window.confirm('Remover as alterações locais desta cheatsheet?')) return;
-                deleteOverride(sheet.slug);
-                setItems((current) => current.filter((item) => item.slug !== sheet.slug));
-              }} className={styles.dangerButton} aria-label={`Excluir ${sheet.title}`}>
+              <button type="button" onClick={() => setPendingDelete(sheet)} className={styles.dangerButton} aria-label={`Excluir ${sheet.title}`}>
                 <Trash2 size={15} />
               </button>
             </div>

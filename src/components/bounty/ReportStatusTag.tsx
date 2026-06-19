@@ -4,8 +4,12 @@ import styles from './Bounty.module.css';
 const REPORT_STATUS_CLASS: Record<ReportStatus, string> = {
   submetido: 'reportStatusSubmetido',
   triado: 'reportStatusTriado',
+  'precisa de mais informações': 'reportStatusPrecisaInfo',
   aceito: 'reportStatusAceito',
   duplicado: 'reportStatusDuplicado',
+  informativo: 'reportStatusInformativo',
+  'não aplicável': 'reportStatusNaoAplicavel',
+  spam: 'reportStatusSpam',
   resolvido: 'reportStatusResolvido',
 };
 

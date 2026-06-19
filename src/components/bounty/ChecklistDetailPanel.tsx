@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Plus, X } from 'lucide-react';
+import ConfirmModal from '@/components/site/ConfirmModal';
 import type { Program } from '@/lib/bounty-data';
 import {
   checklistProgress,
@@ -38,6 +39,7 @@ export default function ChecklistDetailPanel({
   const [draft, setDraft] = useState(checklist);
   const [saved, setSaved] = useState(false);
   const [applyProgramId, setApplyProgramId] = useState('');
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const nextItemId = useRef(0);
 
   useEffect(() => {
@@ -83,12 +85,21 @@ export default function ChecklistDetailPanel({
 
   const handleDelete = () => {
     if (!onDelete) return;
-    if (!window.confirm('Excluir esta checklist? Essa ação não pode ser desfeita.')) return;
-    onDelete(draft.id);
+    setConfirmingDelete(true);
   };
 
   return (
     <div className={styles.reportPanel}>
+      <ConfirmModal
+        open={confirmingDelete}
+        title="Excluir checklist"
+        message="Excluir esta checklist? Essa ação não pode ser desfeita."
+        onConfirm={() => {
+          setConfirmingDelete(false);
+          onDelete?.(draft.id);
+        }}
+        onCancel={() => setConfirmingDelete(false)}
+      />
       <button type="button" onClick={onClose} className={styles.panelCloseButton} aria-label="Fechar painel">
         <X size={15} />
       </button>

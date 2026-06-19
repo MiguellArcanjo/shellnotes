@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import ConfirmModal from '@/components/site/ConfirmModal';
 import type { Program } from '@/lib/bounty-data';
 import type { Finding } from '@/lib/findings-data';
 import { formatAmount, PAYOUT_STATUSES, type Payout } from '@/lib/payouts-data';
@@ -32,6 +33,7 @@ export default function PayoutDetailPanel({
 }) {
   const [draft, setDraft] = useState(payout);
   const [saved, setSaved] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   useEffect(() => {
     // a new payout is only persisted/added to the table once the user
@@ -61,12 +63,21 @@ export default function PayoutDetailPanel({
 
   const handleDelete = () => {
     if (!onDelete) return;
-    if (!window.confirm('Excluir este payout? Essa ação não pode ser desfeita.')) return;
-    onDelete(draft.id);
+    setConfirmingDelete(true);
   };
 
   return (
     <div className={styles.reportPanel}>
+      <ConfirmModal
+        open={confirmingDelete}
+        title="Excluir payout"
+        message="Excluir este payout? Essa ação não pode ser desfeita."
+        onConfirm={() => {
+          setConfirmingDelete(false);
+          onDelete?.(draft.id);
+        }}
+        onCancel={() => setConfirmingDelete(false)}
+      />
       <button type="button" onClick={onClose} className={styles.panelCloseButton} aria-label="Fechar painel">
         <X size={15} />
       </button>

@@ -134,6 +134,12 @@
   font-weight: 600;
 }
 
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .themeButton {
   width: 34px;
   height: 34px;
@@ -663,6 +669,9 @@
 }
 
 .deleteButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 16px;
   border: 0.5px solid var(--lines);
   border-radius: 8px;
@@ -753,6 +762,17 @@
   min-height: 76px;
   line-height: 1.55;
   resize: vertical;
+}
+
+.scopeImportRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scopeImportSummary {
+  font-size: 12px;
+  color: var(--secondary);
 }
 
 .scopeSection {
@@ -1734,6 +1754,14 @@
   background: var(--accent);
 }
 
+.reportStatusPrecisaInfo {
+  color: var(--severity-high);
+}
+
+.reportStatusPrecisaInfo .reportStatusDot {
+  background: var(--severity-high);
+}
+
 .reportStatusDuplicado {
   color: var(--secondary);
   opacity: 0.65;
@@ -1742,6 +1770,34 @@
 .reportStatusDuplicado .reportStatusDot {
   background: transparent;
   border: 0.5px solid var(--secondary);
+}
+
+.reportStatusInformativo {
+  color: var(--secondary);
+}
+
+.reportStatusInformativo .reportStatusDot {
+  background: transparent;
+  border: 0.5px solid var(--secondary);
+}
+
+.reportStatusNaoAplicavel {
+  color: var(--secondary);
+  opacity: 0.65;
+}
+
+.reportStatusNaoAplicavel .reportStatusDot {
+  background: transparent;
+  border: 0.5px solid var(--secondary);
+}
+
+.reportStatusSpam {
+  color: var(--severity-critical);
+  opacity: 0.7;
+}
+
+.reportStatusSpam .reportStatusDot {
+  background: var(--severity-critical);
 }
 
 .reportStatusResolvido {
@@ -2605,4 +2661,659 @@
     grid-column: 1;
     align-items: center;
   }
+}
+
+/* Assets: toolbar, sortable headers, density, bulk actions */
+
+.assetToolbarActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.secondaryButtonSmall {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 0.5px solid var(--lines);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.secondaryButtonSmall:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.secondaryButtonSmall:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.inlineAddButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border: 0.5px dashed var(--lines);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inlineAddButton:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.inlineAddButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--secondary);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sortButton:hover {
+  color: var(--text);
+}
+
+.assetRowCompact {
+  padding: 6px 16px;
+  font-size: 12px;
+}
+
+.columnsMenuWrap {
+  position: relative;
+}
+
+.columnsMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+  padding: 12px;
+  border: 0.5px solid var(--lines);
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--text) 14%, transparent);
+}
+
+.columnsMenuRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.bulkActionBar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 0.5px solid var(--accent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.bulkActionCount {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.bulkTagInputWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.resizeHandle {
+  flex: none;
+  width: 6px;
+  margin: 0 -3px;
+  border-radius: 999px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.resizeHandle:hover,
+.resizeHandle[data-resizing='true'] {
+  background: var(--accent);
+}
+
+/* Assets: fullscreen detail panel */
+
+.panelFullscreenOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  overflow-y: auto;
+  background: var(--bg);
+  padding: 32px 24px 64px;
+}
+
+.reportPanelFullscreen {
+  max-width: 900px;
+  margin: 0 auto;
+  border: none;
+}
+
+.panelFullscreenButton {
+  position: absolute;
+  top: 14px;
+  right: 50px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+}
+
+.panelFullscreenButton:hover {
+  color: var(--text);
+  background: var(--code-bg);
+}
+
+/* Assets: collapsible/draggable detail sections + custom fields */
+
+.detailSectionHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detailSectionDragHandle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--secondary);
+  cursor: grab;
+}
+
+.detailSectionDragHandle:hover {
+  color: var(--text);
+  background: var(--code-bg);
+}
+
+.detailSectionToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.detailSectionChevron {
+  color: var(--secondary);
+  transition: transform 0.18s ease;
+}
+
+.detailSectionChevronCollapsed {
+  color: var(--secondary);
+  transform: rotate(-90deg);
+}
+
+.customFieldLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.customFieldRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+}
+
+.customFieldRemove:hover {
+  color: var(--severity-critical);
+}
+
+.customFieldAddRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.customFieldAddRow .formInput {
+  flex: 1;
+  min-width: 140px;
+}
+
+/* Assets: observation log */
+
+.observationAddRow {
+  display: flex;
+  gap: 8px;
+}
+
+.observationAddRow .formInput {
+  flex: 1;
+}
+
+.observationLogList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.observationRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0.5px solid var(--lines);
+  border-radius: 8px;
+}
+
+.observationDate {
+  flex: none;
+  color: var(--secondary);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.observationText {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* Assets: attachments */
+
+.attachmentList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.attachmentRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0.5px solid var(--lines);
+  border-radius: 8px;
+}
+
+.attachmentOpenButton {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachmentOpenButton:hover {
+  text-decoration: underline;
+}
+
+.attachmentMeta {
+  flex: none;
+  color: var(--secondary);
+  font-size: 11.5px;
+  font-family: var(--font-jetbrains-mono), monospace;
+}
+
+/* Assets: unified status/priority badge + dropdown + manage values */
+
+.taxonomyBadgeWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.taxonomyBadge,
+.taxonomyBadgeCompact {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  border: 0.5px solid;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.taxonomyBadge {
+  height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.taxonomyBadgeCompact {
+  height: 24px;
+  padding: 0 9px;
+  font-size: 11px;
+}
+
+.taxonomyBadgeDot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.taxonomyOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.taxonomyDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 190px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 0.5px solid var(--lines);
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--text) 16%, transparent);
+}
+
+.taxonomyOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  padding: 7px 8px;
+  color: var(--text);
+  font-size: 12.5px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.taxonomyOption:hover {
+  background: var(--code-bg);
+}
+
+.taxonomyOptionLabel {
+  flex: 1;
+}
+
+.taxonomyManageToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 7px 8px;
+  border: none;
+  border-top: 0.5px solid var(--lines);
+  background: transparent;
+  color: var(--secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.taxonomyManageToggle:hover {
+  color: var(--accent);
+}
+
+.taxonomyManageList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px;
+}
+
+.taxonomyManageRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.taxonomyColorSwatches {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+.taxonomySwatch {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.taxonomyEditInput {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border: 0.5px solid var(--lines);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 12px;
+}
+
+.taxonomyManageLabel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--text);
+  font-size: 12.5px;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taxonomyDeleteButton {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+}
+
+.taxonomyDeleteButton:hover {
+  color: var(--severity-critical);
+}
+
+.taxonomyDeleteButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.taxonomyAddRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.taxonomyAddButton {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0.5px solid var(--lines);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.taxonomyAddButton:hover {
+  border-color: var(--accent);
+}
+
+/* Assets: bulk import modal */
+
+.importOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--text) 45%, transparent);
+}
+
+.importModal {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border: 0.5px solid var(--lines);
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: 0 20px 50px color-mix(in srgb, var(--text) 18%, transparent);
+}
+
+.importModalHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.importModalTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: lowercase;
+}
+
+.importModalHint {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--secondary);
+}
+
+.importModalHint code {
+  font-family: var(--font-jetbrains-mono), monospace;
+  background: var(--code-bg);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.importTextarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 12px 14px;
+  border: 0.5px solid var(--lines);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12.5px;
+  resize: vertical;
+}
+
+.importPreviewRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--secondary);
+}
+
+.importPreviewActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

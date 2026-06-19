@@ -14,9 +14,35 @@ export type DiscoverySource = 'subfinder' | 'amass' | 'crt.sh' | 'ASN' | 'dork' 
 
 export type ResolveStatus = 'vivo' | 'morto' | 'não verificado';
 
-export type AssetStatus = 'não testado' | 'em andamento' | 'testado' | 'interessante' | 'morto';
+// Status and priority used to be closed unions; they are now taxonomy ids
+// (see lib/assetTaxonomy.ts) so users can rename/recolor/add values. The
+// aliases stay so existing imports keep working.
+export type AssetStatus = string;
 
-export type Priority = 'baixa' | 'média' | 'alta' | 'crítica';
+export type Priority = string;
+
+export type SectionKey = 'identificacao' | 'rede' | 'fingerprint' | 'superficie' | 'triagem';
+
+export type CustomField = {
+  id: string;
+  section: SectionKey;
+  label: string;
+  value: string;
+};
+
+export type ObservationEntry = {
+  id: string;
+  text: string;
+  at: string; // ISO datetime
+};
+
+export type AssetAttachment = {
+  id: string;
+  name: string;
+  path: string;
+  size: number;
+  uploadedAt: string; // ISO datetime
+};
 
 export type Asset = {
   id: string;
@@ -61,6 +87,12 @@ export type Asset = {
   findingIds: string[];
   notes: string;
   lastTested: string;
+
+  // Optional because assets persisted before this field existed (seed data,
+  // older localStorage/Supabase records) won't have them — default to [].
+  customFields?: CustomField[];
+  observationLog?: ObservationEntry[];
+  attachments?: AssetAttachment[];
 };
 
 export const ASSET_TYPES: AssetType[] = [
@@ -642,5 +674,8 @@ export function createBlankAsset(id: string): Asset {
     findingIds: [],
     notes: '',
     lastTested: '',
+    customFields: [],
+    observationLog: [],
+    attachments: [],
   };
 }

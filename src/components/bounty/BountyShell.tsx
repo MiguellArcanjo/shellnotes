@@ -9,6 +9,7 @@ import {
   Crosshair,
   FileSearch,
   FileText,
+  Home,
   LayoutDashboard,
   Lightbulb,
   ListChecks,
@@ -95,9 +96,14 @@ export default function BountyShell({ children }: { children: React.ReactNode })
       <main className={styles.main}>
         <header className={styles.topbar}>
           <div className={styles.topbarTitle}>Bug bounty</div>
-          <button type="button" onClick={toggleTheme} className={styles.themeButton} aria-label="Alternar tema">
-            {isDark ? <SunIcon /> : <MoonIcon />}
-          </button>
+          <div className={styles.topbarActions}>
+            <Link href="/" className={styles.themeButton} aria-label="Voltar para a home">
+              <Home size={16} />
+            </Link>
+            <button type="button" onClick={toggleTheme} className={styles.themeButton} aria-label="Alternar tema">
+              {isDark ? <SunIcon /> : <MoonIcon />}
+            </button>
+          </div>
         </header>
 
         <div className={styles.content}>{children}</div>

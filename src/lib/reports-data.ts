@@ -1,4 +1,13 @@
-export type ReportStatus = 'submetido' | 'triado' | 'aceito' | 'duplicado' | 'resolvido';
+export type ReportStatus =
+  | 'submetido'
+  | 'triado'
+  | 'precisa de mais informações'
+  | 'aceito'
+  | 'duplicado'
+  | 'informativo'
+  | 'não aplicável'
+  | 'spam'
+  | 'resolvido';
 
 export type TimelineEntry = {
   date: string;
@@ -17,7 +26,17 @@ export type Report = {
   timeline: TimelineEntry[];
 };
 
-export const REPORT_STATUSES: ReportStatus[] = ['submetido', 'triado', 'aceito', 'duplicado', 'resolvido'];
+export const REPORT_STATUSES: ReportStatus[] = [
+  'submetido',
+  'triado',
+  'precisa de mais informações',
+  'aceito',
+  'duplicado',
+  'informativo',
+  'não aplicável',
+  'spam',
+  'resolvido',
+];
 
 export const reports: Report[] = [
   {

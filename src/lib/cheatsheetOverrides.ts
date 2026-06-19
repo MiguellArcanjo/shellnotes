@@ -30,18 +30,18 @@ export function getAllOverrides(): Record<string, CheatsheetOverride> {
   return readAll();
 }
 
-export function saveOverride(slug: string, data: CheatsheetOverride) {
+export async function saveOverride(slug: string, data: CheatsheetOverride) {
   const all = readAll();
   all[slug] = { ...all[slug], ...data };
   writeAll(all);
-  void upsertContentEntry('cheatsheet', slug, 'published', { ...data, slug }).catch(() => {});
+  await upsertContentEntry('cheatsheet', slug, 'published', { ...data, slug }).catch(() => {});
 }
 
-export function deleteOverride(slug: string) {
+export async function deleteOverride(slug: string) {
   const all = readAll();
   delete all[slug];
   writeAll(all);
-  void deleteContentEntry('cheatsheet', slug).catch(() => {});
+  await deleteContentEntry('cheatsheet', slug).catch(() => {});
 }
 
 export function getEffectiveCheatsheet(seed: Cheatsheet): Cheatsheet {
