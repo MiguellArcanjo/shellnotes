@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg: #FBFBF9;
+  --text: #1A1A17;
+  --secondary: #76746C;
+  --lines: #E7E6E0;
+  --accent: #3E7A5E;
+  --muted: var(--secondary);
+  --line: var(--lines);
+  --code-bg: #F4F3EF;
+  --severity-critical: #C2553F;
+  --severity-high: #CC7A3B;
+  --severity-medium: #C2A03B;
+  --severity-low: #5E9E73;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-secondary: var(--secondary);
+  --color-lines: var(--lines);
+  --color-accent: var(--accent);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161514;
+    --text: #ECEAE3;
+    --secondary: #9A978D;
+    --lines: #2A2926;
+    --accent: #6BB88F;
+    --code-bg: #1E1D1B;
+  }
+}
+
+.dark,
+html[data-theme='dark'] {
+  --bg: #161514;
+  --text: #ECEAE3;
+  --secondary: #9A978D;
+  --lines: #2A2926;
+  --accent: #6BB88F;
+  --code-bg: #1E1D1B;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}

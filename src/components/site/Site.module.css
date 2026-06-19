@@ -1,0 +1,130 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 26px 0;
+  border-bottom: 0.5px solid var(--line);
+  transition: border-color 0.38s ease;
+}
+
+.logo {
+  text-decoration: none;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.dot {
+  color: var(--accent);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.navLink {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.22s ease;
+}
+
+.navLink:hover {
+  color: var(--text);
+}
+
+.navLinkActive {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.adminLink {
+  text-decoration: none;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border: 0.5px solid var(--accent);
+  border-radius: 7px;
+  transition: color 0.22s ease, background-color 0.22s ease;
+}
+
+.adminLink:hover {
+  color: var(--bg);
+  background: var(--accent);
+}
+
+.themeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-left: 4px;
+  padding: 0;
+  border: 0.5px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.22s ease, border-color 0.22s ease;
+}
+
+.themeButton:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 56px 0 64px;
+  margin-top: 64px;
+  border-top: 0.5px solid var(--line);
+  transition: border-color 0.38s ease;
+}
+
+.footerBrand {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.footerTagline {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.footerNav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.footerLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-decoration: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.22s ease;
+}
+
+.footerLink:hover {
+  color: var(--accent);
+}
