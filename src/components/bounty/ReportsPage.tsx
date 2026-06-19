@@ -19,6 +19,7 @@ export default function ReportsPage() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [findings, setFindings] = useState<Finding[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [draftReport, setDraftReport] = useState<Report | null>(null);
   const [programFilter, setProgramFilter] = useState(TODOS);
   const [statusFilter, setStatusFilter] = useState(TODOS);
 
@@ -44,16 +45,30 @@ export default function ReportsPage() {
   );
 
   const selected = items.find((report) => report.id === selectedId) || null;
+  const panelReport = draftReport || selected;
 
   const handleCreate = () => {
-    const blank = createBlankReport(`report-${Date.now()}`);
-    setItems((current) => [blank, ...current]);
-    setSelectedId(blank.id);
+    setSelectedId(null);
+    setDraftReport(createBlankReport(`report-${Date.now()}`));
   };
 
   const handleUpdate = useCallback((updated: Report) => {
     setItems((current) => current.map((report) => (report.id === updated.id ? updated : report)));
   }, []);
+
+  // a draft report only joins the visible list once the user explicitly
+  // saves it for the first time — opening "novo report" and leaving must not
+  // leave a ghost entry behind
+  const handleFinalizeCreate = useCallback((created: Report) => {
+    setItems((current) => [created, ...current]);
+    setDraftReport(null);
+    setSelectedId(created.id);
+  }, []);
+
+  const handleClosePanel = () => {
+    setDraftReport(null);
+    setSelectedId(null);
+  };
 
   return (
     <>
@@ -118,14 +133,15 @@ export default function ReportsPage() {
         </div>
 
         <div className={styles.reportDetailCol}>
-          {selected ? (
+          {panelReport ? (
             <ReportDetailPanel
-              key={selected.id}
-              report={selected}
+              key={panelReport.id}
+              report={panelReport}
               programs={programs}
               findings={findings}
-              onChange={handleUpdate}
-              onClose={() => setSelectedId(null)}
+              isNew={!!draftReport}
+              onChange={draftReport ? handleFinalizeCreate : handleUpdate}
+              onClose={handleClosePanel}
             />
           ) : (
             <div className={styles.reportDetailEmpty}>

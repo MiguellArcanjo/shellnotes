@@ -16,12 +16,14 @@ export default function ReportDetailPanel({
   report,
   programs,
   findings,
+  isNew = false,
   onChange,
   onClose,
 }: {
   report: Report;
   programs: Program[];
   findings: Finding[];
+  isNew?: boolean;
   onChange: (updated: Report) => void;
   onClose: () => void;
 }) {
@@ -30,13 +32,16 @@ export default function ReportDetailPanel({
   const [bodyView, setBodyView] = useState<'editar' | 'previa'>('editar');
 
   useEffect(() => {
+    // a new report is only persisted/added to the list once the user
+    // explicitly finalizes it — typing alone must not leak it into the list
+    if (isNew) return;
     onChange(draft);
     const id = window.setTimeout(() => {
       saveOverride(draft.id, draft);
       setSaved(true);
     }, AUTOSAVE_DELAY);
     return () => window.clearTimeout(id);
-  }, [draft, onChange]);
+  }, [draft, isNew, onChange]);
 
   const update = (patch: Partial<Report>) => {
     setSaved(false);
@@ -50,6 +55,7 @@ export default function ReportDetailPanel({
   const save = () => {
     saveOverride(draft.id, draft);
     setSaved(true);
+    if (isNew) onChange(draft);
   };
 
   const relatedFindings = draft.programId ? findings.filter((f) => f.programId === draft.programId) : findings;

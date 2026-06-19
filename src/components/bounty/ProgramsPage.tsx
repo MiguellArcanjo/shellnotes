@@ -16,6 +16,7 @@ const STATUS_CLASS: Record<Program['status'], string> = {
 export default function ProgramsPage() {
   const [items, setItems] = useState<Program[]>([]);
   const [editing, setEditing] = useState<Program | null>(null);
+  const [editingIsNew, setEditingIsNew] = useState(false);
 
   useEffect(() => {
     // overrides are stored locally and only exist in the browser
@@ -29,7 +30,7 @@ export default function ProgramsPage() {
   };
 
   if (editing) {
-    return <ProgramEditor program={editing} onExit={handleExit} />;
+    return <ProgramEditor program={editing} isNew={editingIsNew} onExit={handleExit} />;
   }
 
   return (
@@ -44,7 +45,10 @@ export default function ProgramsPage() {
         </div>
         <button
           type="button"
-          onClick={() => setEditing(createBlankProgram(`programa-${Date.now()}`))}
+          onClick={() => {
+            setEditingIsNew(true);
+            setEditing(createBlankProgram(`programa-${Date.now()}`));
+          }}
           className={styles.newButton}
         >
           <Plus size={14} />
@@ -57,7 +61,10 @@ export default function ProgramsPage() {
           <button
             key={program.id}
             type="button"
-            onClick={() => setEditing(program)}
+            onClick={() => {
+              setEditingIsNew(false);
+              setEditing(program);
+            }}
             className={styles.programCard}
           >
             <div className={styles.programCardHead}>

@@ -14,7 +14,6 @@ import {
 import {
   deleteOverride,
   getRemoteOverrides,
-  saveOverride,
 } from '@/lib/cheatsheetOverrides';
 import styles from './Admin.module.css';
 
@@ -63,11 +62,8 @@ export default function AdminCheatsheetsManager({
       <div className={styles.editorWrap}>
         <CheatsheetEditor
           sheet={draft}
-          onExit={(updated) => {
-            void saveOverride(updated.slug, updated).then(() => {
-              router.push('/admin/cheatsheets');
-            });
-          }}
+          isNew={mode === 'new'}
+          onExit={() => router.push('/admin/cheatsheets')}
         />
       </div>
     ) : <div className={styles.loading}>Preparando cheatsheet…</div>;

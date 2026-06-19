@@ -1,7 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import styles from './Writeups.module.css';
+
+const TOKEN_PATTERN =
+  /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|#[^\n]*)|(`(?:\\.|[^`])*`|"(?:\\.|[^"])*"|'(?:\\.|[^'])*')|\b(const|let|var|function|return|if|else|for|while|class|import|from|export|async|await|def|try|catch|throw|new|true|false|null|undefined|SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|CREATE|TABLE|AND|OR|AS|INTO|VALUES)\b|\b(\d+(?:\.\d+)?)\b/g;
+
+function highlightCode(code: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  let lastIndex = 0;
+  let index = 0;
+
+  for (const match of code.matchAll(TOKEN_PATTERN)) {
+    if (match.index === undefined) continue;
+    if (match.index > lastIndex) nodes.push(code.slice(lastIndex, match.index));
+    const className = match[1]
+      ? styles.codeComment
+      : match[2]
+        ? styles.codeString
+        : match[3]
+          ? styles.codeKeyword
+          : styles.codeNumber;
+    nodes.push(<span key={index++} className={className}>{match[0]}</span>);
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < code.length) nodes.push(code.slice(lastIndex));
+  return nodes;
+}
 
 function CopyIcon() {
   return (
@@ -37,7 +62,7 @@ export default function CodeBlock({ code, language }: { code: string; language?:
     <div className={styles.bodyCode}>
       {language && <div className={styles.bodyCodeLang}>{language}</div>}
       <div className={styles.bodyCodeRow}>
-        <code className={styles.bodyCodeText}>{code}</code>
+        <code className={styles.bodyCodeText}>{highlightCode(code)}</code>
         <button type="button" onClick={handleCopy} aria-label="Copiar código" className={styles.bodyCodeCopy}>
           {copied ? <CheckIcon /> : <CopyIcon />}
         </button>

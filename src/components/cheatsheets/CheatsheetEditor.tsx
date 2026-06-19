@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Cheatsheet } from '@/lib/cheatsheets-data';
 import { saveOverride } from '@/lib/cheatsheetOverrides';
 import styles from './Cheatsheets.module.css';
@@ -10,17 +10,24 @@ const AUTOSAVE_DELAY = 1200;
 
 export default function CheatsheetEditor({
   sheet,
+  isNew = false,
   onExit,
   backHref = '/admin/cheatsheets',
 }: {
   sheet: Cheatsheet;
+  isNew?: boolean;
   onExit: (sheet: Cheatsheet) => void;
   backHref?: string;
 }) {
   const [draft, setDraft] = useState(sheet);
   const [saved, setSaved] = useState(false);
+  // a brand new cheatsheet must never be persisted just by opening the
+  // editor and leaving — only an explicit save (or autosave after that
+  // first save) should create it
+  const hasPersisted = useRef(!isNew);
 
   useEffect(() => {
+    if (!hasPersisted.current) return;
     const id = window.setTimeout(() => {
       saveOverride(draft.slug, draft);
       setSaved(true);
@@ -55,8 +62,16 @@ export default function CheatsheetEditor({
   };
 
   const save = () => {
+    hasPersisted.current = true;
     saveOverride(draft.slug, draft);
     setSaved(true);
+  };
+
+  const handleExit = () => {
+    // flush the latest edits immediately instead of waiting for the
+    // autosave timer, but only if this entry is actually worth keeping
+    if (hasPersisted.current) saveOverride(draft.slug, draft);
+    onExit(draft);
   };
 
   return (
@@ -66,7 +81,7 @@ export default function CheatsheetEditor({
           <Link href={backHref} className={styles.breadcrumbLink}>cheatsheets</Link>
           <span className={styles.breadcrumbSep}>/</span>
           <span className={styles.breadcrumbCurrent}>{draft.title || 'sem título'}</span>
-          <button type="button" onClick={() => onExit(draft)} className={styles.closeEditButton}>
+          <button type="button" onClick={handleExit} className={styles.closeEditButton}>
             voltar ao painel
           </button>
         </div>

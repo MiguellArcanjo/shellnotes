@@ -20,17 +20,24 @@ const AUTOSAVE_DELAY = 1200;
 
 export default function ProgramEditor({
   program,
+  isNew = false,
   onExit,
 }: {
   program: Program;
+  isNew?: boolean;
   onExit: (saved: Program) => void;
 }) {
   const [draft, setDraft] = useState(program);
   const [saved, setSaved] = useState(false);
   const [scopeImportSummary, setScopeImportSummary] = useState('');
   const scopeFileInputRef = useRef<HTMLInputElement | null>(null);
+  // a brand new program must never be persisted just by opening the editor
+  // and leaving — only an explicit save (or autosave after that first save)
+  // should create it
+  const hasPersisted = useRef(!isNew);
 
   useEffect(() => {
+    if (!hasPersisted.current) return;
     const id = window.setTimeout(() => {
       saveOverride(draft.id, draft);
       setSaved(true);
@@ -52,6 +59,7 @@ export default function ProgramEditor({
   };
 
   const save = () => {
+    hasPersisted.current = true;
     saveOverride(draft.id, draft);
     setSaved(true);
   };

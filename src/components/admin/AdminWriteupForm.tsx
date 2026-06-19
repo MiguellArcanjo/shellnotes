@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import WriteupEditor from '@/components/writeups/WriteupEditor';
 import { createBlankWriteup, type Writeup } from '@/lib/writeups-data';
-import { getRemoteOverride, saveOverride } from '@/lib/writeupOverrides';
+import { getRemoteOverride } from '@/lib/writeupOverrides';
 import styles from './Admin.module.css';
 
 export default function AdminWriteupForm({
@@ -52,12 +52,9 @@ export default function AdminWriteupForm({
     <div className={styles.editorWrap}>
       <WriteupEditor
         writeup={writeup}
+        isNew={slug === 'new'}
         backHref="/admin/writeups"
-        onExit={(updated) => {
-          void saveOverride(updated.slug, updated).then(() => {
-            router.push('/admin/writeups');
-          });
-        }}
+        onExit={() => router.push('/admin/writeups')}
       />
     </div>
   );

@@ -24,6 +24,7 @@ export default function FindingsPage() {
   const [items, setItems] = useState<Finding[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [editing, setEditing] = useState<Finding | null>(null);
+  const [editingIsNew, setEditingIsNew] = useState(false);
   const [programFilter, setProgramFilter] = useState(TODOS);
   const [severityFilter, setSeverityFilter] = useState(TODOS);
   const [statusFilter, setStatusFilter] = useState(TODOS);
@@ -64,7 +65,7 @@ export default function FindingsPage() {
   };
 
   if (editing) {
-    return <FindingEditor finding={editing} programs={programs} onExit={handleExit} />;
+    return <FindingEditor finding={editing} programs={programs} isNew={editingIsNew} onExit={handleExit} />;
   }
 
   return (
@@ -77,7 +78,10 @@ export default function FindingsPage() {
         </div>
         <button
           type="button"
-          onClick={() => setEditing(createBlankFinding(`finding-${Date.now()}`))}
+          onClick={() => {
+            setEditingIsNew(true);
+            setEditing(createBlankFinding(`finding-${Date.now()}`));
+          }}
           className={styles.newButton}
         >
           <Plus size={14} />
@@ -114,7 +118,10 @@ export default function FindingsPage() {
           <button
             key={finding.id}
             type="button"
-            onClick={() => setEditing(finding)}
+            onClick={() => {
+              setEditingIsNew(false);
+              setEditing(finding);
+            }}
             className={styles.findingRow}
           >
             <span className={`${styles.severity} ${styles[finding.severity]}`} aria-label={finding.severity} />

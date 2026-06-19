@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
 import ChipInput from '@/components/site/ChipInput';
 import { SEVERITY_ORDER, SEVERITY_LABELS, type Program } from '@/lib/bounty-data';
@@ -69,17 +69,24 @@ function SnippetCopyButton({ code }: { code: string }) {
 export default function FindingEditor({
   finding,
   programs,
+  isNew = false,
   onExit,
 }: {
   finding: Finding;
   programs: Program[];
+  isNew?: boolean;
   onExit: (saved: Finding) => void;
 }) {
   const [draft, setDraft] = useState(finding);
   const [saved, setSaved] = useState(false);
   const [cvssExpanded, setCvssExpanded] = useState(false);
+  // a brand new finding must never be persisted just by opening the editor
+  // and leaving — only an explicit save (or autosave after that first
+  // save) should create it
+  const hasPersisted = useRef(!isNew);
 
   useEffect(() => {
+    if (!hasPersisted.current) return;
     const id = window.setTimeout(() => {
       saveOverride(draft.id, draft);
       setSaved(true);
@@ -113,6 +120,7 @@ export default function FindingEditor({
   };
 
   const save = () => {
+    hasPersisted.current = true;
     saveOverride(draft.id, draft);
     setSaved(true);
   };
