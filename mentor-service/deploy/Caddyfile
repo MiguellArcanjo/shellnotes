@@ -1,0 +1,22 @@
+mentor.shellnotes.tech {
+	encode zstd gzip
+
+	@health path /health
+	handle @health {
+		reverse_proxy 127.0.0.1:3100
+	}
+
+	@mentor path /v1/ask
+	handle @mentor {
+		reverse_proxy 127.0.0.1:3100 {
+			transport http {
+				read_timeout 110s
+				write_timeout 110s
+			}
+		}
+	}
+
+	handle {
+		respond "Not found" 404
+	}
+}

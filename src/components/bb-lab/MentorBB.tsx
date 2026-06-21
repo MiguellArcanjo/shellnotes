@@ -177,7 +177,7 @@ export default function MentorBB({
               <strong>{setupRequired ? 'Claude ainda não foi conectado.' : 'Não consegui responder.'}</strong>
               <p>{error}</p>
               {setupRequired && (
-                <code>ANTHROPIC_API_KEY=sk-ant-...</code>
+                <code>SHELLNOTES_MENTOR_URL + SHELLNOTES_MENTOR_SECRET</code>
               )}
             </div>
           )}

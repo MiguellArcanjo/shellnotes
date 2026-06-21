@@ -1,132 +1,104 @@
+import { createHmac, randomUUID } from 'node:crypto';
 import type { BBLabReport } from '@/types/bb-lab';
+
+export const runtime = 'nodejs';
+export const maxDuration = 120;
 
 type AskBody = {
   question?: string;
   reports?: BBLabReport[];
 };
 
-type ClaudeResponse = {
-  content?: Array<{ type?: string; text?: string }>;
-  error?: { message?: string };
+type MentorError = {
+  error?: string;
+  code?: string;
 };
 
-function reportContext(report: BBLabReport, index: number): string {
-  const payloads = report.payloads
-    .slice(0, 3)
-    .map((payload) => `${payload.label}: ${payload.code}\nContexto: ${payload.note}`)
-    .join('\n');
+function configuration() {
+  const url = process.env.SHELLNOTES_MENTOR_URL?.replace(/\/+$/, '');
+  const secret = process.env.SHELLNOTES_MENTOR_SECRET;
+  return { url, secret };
+}
 
-  return [
-    `[FONTE ${index + 1}]`,
-    `ID: ${report.id}`,
-    `Programa: ${report.program}`,
-    `Pesquisador: @${report.researcher}`,
-    `Título original: ${report.titleOriginal}`,
-    `URL: ${report.url}`,
-    `Severidade: ${report.severity}`,
-    `CWE: ${report.cwe}`,
-    `Técnica: ${report.technique}`,
-    `Superfície: ${report.surface}`,
-    `Resumo didático: ${report.summaryPt}`,
-    `Impacto: ${report.impact}`,
-    `Bypasses: ${report.bypasses.join('; ')}`,
-    `Prática sugerida: ${report.practice.join('; ')}`,
-    payloads ? `Payloads/exemplos disponíveis:\n${payloads}` : '',
-  ].filter(Boolean).join('\n');
+function validBody(body: AskBody): body is Required<AskBody> {
+  return Boolean(
+    body.question?.trim()
+    && body.question.length <= 2000
+    && Array.isArray(body.reports)
+    && body.reports.length > 0
+    && body.reports.length <= 12,
+  );
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  const { url, secret } = configuration();
+  if (!url || !secret) {
     return Response.json(
       {
-        error: 'Adicione ANTHROPIC_API_KEY ao arquivo .env.local e reinicie o servidor.',
+        error: 'O servidor privado do Mentor BB ainda não foi conectado.',
         setupRequired: true,
       },
       { status: 503 },
     );
   }
 
-  const body = (await request.json()) as AskBody;
-  const question = body.question?.trim() || '';
-  const reports = Array.isArray(body.reports) ? body.reports.slice(0, 12) : [];
+  let body: AskBody;
+  try {
+    body = (await request.json()) as AskBody;
+  } catch {
+    return Response.json({ error: 'Corpo da requisição inválido.' }, { status: 400 });
+  }
 
-  if (!question || question.length > 2000 || reports.length === 0) {
+  if (!validBody(body)) {
     return Response.json({ error: 'Pergunta ou contexto inválido.' }, { status: 400 });
   }
 
-  const context = reports.map(reportContext).join('\n\n---\n\n');
-  const model = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
-
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 1800,
-      cache_control: { type: 'ephemeral' },
-      system: [
-        {
-          type: 'text',
-          text: [
-            'Você é o Mentor BB do shellnotes, um tutor de bug bounty para um estudante.',
-            'Responda sempre em português do Brasil, de forma prática e pedagógica.',
-            'Use somente as fontes fornecidas para afirmar fatos sobre reports reais.',
-            'Cite fontes no formato [Fonte N] ao lado de cada afirmação factual.',
-            'Diferencie claramente: fato do report, inferência e exercício de laboratório.',
-            'Para perguntas de caça, entregue hipóteses priorizadas, passos de validação, sinais de sucesso, evidências a coletar e defesas.',
-            'Payloads só devem ser explicados para ambientes autorizados e devem vir acompanhados de pré-condições e interpretação.',
-            'Se o contexto não sustentar uma resposta, diga isso explicitamente.',
-          ].join('\n'),
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `BASE DE REPORTS RECUPERADOS:\n\n${context}`,
-              cache_control: { type: 'ephemeral' },
-            },
-            {
-              type: 'text',
-              text: `PERGUNTA DO ESTUDANTE:\n${question}`,
-            },
-          ],
-        },
-      ],
-    }),
-    signal: AbortSignal.timeout(60_000),
+  const payload = JSON.stringify({
+    question: body.question.trim(),
+    reports: body.reports,
   });
+  const timestamp = Date.now().toString();
+  const requestId = randomUUID();
+  const signature = createHmac('sha256', secret)
+    .update(`${timestamp}.${requestId}.${payload}`)
+    .digest('hex');
 
-  const payload = (await response.json()) as ClaudeResponse;
-  if (!response.ok) {
+  try {
+    const response = await fetch(`${url}/v1/ask`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shellnotes-Timestamp': timestamp,
+        'X-Shellnotes-Request-Id': requestId,
+        'X-Shellnotes-Signature': signature,
+      },
+      body: payload,
+      cache: 'no-store',
+      signal: AbortSignal.timeout(105_000),
+    });
+
+    const text = await response.text();
+    let mentorPayload: MentorError & Record<string, unknown>;
+    try {
+      mentorPayload = JSON.parse(text) as MentorError & Record<string, unknown>;
+    } catch {
+      mentorPayload = { error: 'O servidor do Mentor retornou uma resposta inválida.' };
+    }
+
+    return Response.json(mentorPayload, {
+      status: response.status,
+      headers: { 'Cache-Control': 'no-store' },
+    });
+  } catch (cause) {
+    const timedOut = cause instanceof Error && cause.name === 'TimeoutError';
     return Response.json(
-      { error: payload.error?.message || `Claude respondeu com HTTP ${response.status}.` },
+      {
+        error: timedOut
+          ? 'O Mentor demorou mais que o esperado. Tente novamente em instantes.'
+          : 'Não foi possível alcançar o servidor privado do Mentor.',
+        code: timedOut ? 'MENTOR_TIMEOUT' : 'MENTOR_UNAVAILABLE',
+      },
       { status: 502 },
     );
   }
-
-  const answer = (payload.content || [])
-    .filter((block) => block.type === 'text')
-    .map((block) => block.text || '')
-    .join('\n')
-    .trim();
-
-  return Response.json({
-    answer,
-    sources: reports.map(({ id, program, titleOriginal, url, technique }) => ({
-      id,
-      program,
-      titleOriginal,
-      url,
-      technique,
-    })),
-  });
 }
