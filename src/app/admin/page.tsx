@@ -15,13 +15,11 @@ const definitions: { name: string; type: ContentType; icon: typeof FileText; hre
 ];
 
 export default function AdminDashboard() {
-  const [counts, setCounts] = useState<Record<ContentType, number>>({
-    writeup: 0, cheatsheet: 0, til: 0, glossary: 0, cve: 0,
-  });
+  const [counts, setCounts] = useState<Partial<Record<ContentType, number>>>({});
 
   useEffect(() => {
     void Promise.all(definitions.map(async ({ type }) => [type, (await listContentEntries(type)).length] as const))
-      .then((entries) => setCounts(Object.fromEntries(entries) as Record<ContentType, number>));
+      .then((entries) => setCounts(Object.fromEntries(entries) as Partial<Record<ContentType, number>>));
   }, []);
 
   return (
@@ -35,7 +33,7 @@ export default function AdminDashboard() {
         {definitions.map(({ name, type, icon: Icon, href }) => (
           <Link key={type} href={href} className={styles.metric}>
             <Icon size={17} strokeWidth={1.7} className={styles.metricIcon} />
-            <div className={styles.metricValue}>{counts[type]}</div>
+            <div className={styles.metricValue}>{counts[type] ?? 0}</div>
             <div className={styles.metricLabel}>{name}</div>
           </Link>
         ))}

@@ -10,7 +10,8 @@ const NAV_ITEMS = [
   { key: 'writeups', label: 'writeups', href: '/writeups' },
   { key: 'cheatsheets', label: 'cheatsheets', href: '/cheatsheets' },
   { key: 'cves', label: 'cves', href: '/cves' },
-  { key: 'bb-lab', label: 'bb-lab', href: '/bb-lab' },
+  { key: 'bb-lab', label: 'thm', href: '/bb-lab' },
+  { key: 'jornada', label: 'jornada', href: '/jornada' },
   { key: 'til', label: 'til', href: '/til' },
   { key: 'glossario', label: 'glossário', href: '/glossario' },
 ] as const;

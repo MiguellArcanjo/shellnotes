@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Spectral } from 'next/font/google';
-import ThmNotebook from '@/components/bb-lab/ThmNotebook';
+import JourneyPage from '@/components/journey/JourneyPage';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -21,14 +21,14 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'THM — caderno de campo · shellnotes',
-  description: 'Caderno de campo para rooms e learning paths do TryHackMe: recon, comandos, loot, flags e writeups.',
+  title: 'Jornada · shellnotes',
+  description: 'Perguntas, biblioteca, certificados e projetos em um registro pessoal de evolução.',
 };
 
 export default function Page() {
   return (
     <div className={`${inter.variable} ${spectral.variable} ${mono.variable}`}>
-      <ThmNotebook />
+      <JourneyPage />
     </div>
   );
 }

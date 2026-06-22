@@ -1,6 +1,6 @@
 import { createClient } from './client';
 
-export type ContentType = 'writeup' | 'cheatsheet' | 'til' | 'glossary' | 'cve';
+export type ContentType = 'writeup' | 'cheatsheet' | 'til' | 'glossary' | 'cve' | 'thm-room';
 
 type ContentRow<T> = {
   slug: string;

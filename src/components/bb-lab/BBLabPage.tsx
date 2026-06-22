@@ -13,6 +13,7 @@ import {
   Code2,
   Filter,
   FlaskConical,
+  GraduationCap,
   Layers3,
   Lightbulb,
   Search,
@@ -24,6 +25,7 @@ import { useEffect, useMemo, useState } from 'react';
 import SiteFooter from '@/components/site/SiteFooter';
 import SiteHeader from '@/components/site/SiteHeader';
 import MentorBB from './MentorBB';
+import StudyHub from './StudyHub';
 import type {
   BBLabPublicDetail,
   BBLabReport,
@@ -32,7 +34,7 @@ import type {
 } from '@/types/bb-lab';
 import styles from './BBLab.module.css';
 
-type View = 'reports' | 'mentor' | 'practice';
+type View = 'reports' | 'mentor' | 'practice' | 'study';
 type PaidFilter = 'all' | 'paid' | 'unpaid';
 
 const SEVERITIES: Array<BBLabSeverity | 'Todas'> = ['Todas', 'Critical', 'High', 'Medium', 'Low'];
@@ -285,6 +287,7 @@ export default function BBLabPage() {
             ['reports', BookOpenCheck, 'reports'],
             ['mentor', BrainCircuit, 'mentor bb'],
             ['practice', FlaskConical, 'trilhas de prática'],
+            ['study', GraduationCap, 'estudar'],
           ] as const).map(([key, Icon, label]) => (
             <button
               key={key}
@@ -483,6 +486,8 @@ export default function BBLabPage() {
         )}
 
         {view === 'mentor' && <MentorBB reports={reports} loadingReports={loading} />}
+
+        {view === 'study' && <StudyHub reports={reports} loadingReports={loading} />}
 
         {view === 'practice' && (
           <section className={styles.practice}>

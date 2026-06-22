@@ -7,7 +7,11 @@ export type PrivateCategory =
   | 'lead'
   | 'report'
   | 'payout'
-  | 'checklist';
+  | 'checklist'
+  | 'study-note'
+  | 'study-plan'
+  | 'study-session'
+  | 'journey';
 
 export async function upsertPrivateEntry<T extends object>(
   category: PrivateCategory,
